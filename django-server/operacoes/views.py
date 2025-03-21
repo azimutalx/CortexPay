@@ -1,5 +1,6 @@
+import logging
 from rest_framework import viewsets
-from rest_framework.response import Response  # Import adicionado
+from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from .models import Bank, DailyRate, RemittanceRequest, BeneficiaryPayment, DollarPurchase, SellTransaction, AdvancePayment, Receipt
 from usuarios.models import User
@@ -8,6 +9,8 @@ from .serializers import (
     BeneficiaryPaymentSerializer, DollarPurchaseSerializer, SellTransactionSerializer,
     AdvancePaymentSerializer, ReceiptSerializer
 )
+
+logger = logging.getLogger(__name__)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -60,24 +63,24 @@ class BeneficiaryPaymentViewSet(viewsets.ModelViewSet):
     serializer_class = BeneficiaryPaymentSerializer
 
     def update(self, request, *args, **kwargs):
-        payment = self.get_object()  # Pega o pagamento atual
-        user = request.user  # Usuário fazendo a requisição
+        payment = self.get_object()
+        user = request.user
+        logger.info(f"Usuário atual: {user.username} (ID: {user.id})")
+        logger.info(f"Status do pagamento: {payment.status}")
+        logger.info(f"Remessa: {payment.remittance_request}")
+        if payment.remittance_request:
+            logger.info(f"Payer da remessa: {payment.remittance_request.payer.username} (ID: {payment.remittance_request.payer.id})")
 
-        # Se o pagamento já está 'pago', aplicar restrições
         if payment.status == 'pago':
-            # Verificar se há uma remessa associada e se o usuário é o pagador
-            if not payment.remittance_request or payment.remittance_request.payer != user:
+            if payment.remittance_request and payment.remittance_request.payer.id != user.id:
+                logger.error("Permissão negada: usuário não é o pagador")
                 raise PermissionDenied("Apenas o pagador pode alterar um pagamento concluído.")
             
-            # Verificar se o motivo foi fornecido
             new_reason = request.data.get('reason', payment.reason)
             if not new_reason:
                 raise ValidationError({"reason": "É necessário fornecer uma justificativa para alterar um pagamento concluído."})
-            
-            # Atualizar o reason se fornecido
             request.data['reason'] = new_reason
 
-        # Prosseguir com a atualização padrão
         return super().update(request, *args, **kwargs)
 
 class DollarPurchaseViewSet(viewsets.ModelViewSet):
