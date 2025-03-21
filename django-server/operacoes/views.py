@@ -98,3 +98,13 @@ class AdvancePaymentViewSet(viewsets.ModelViewSet):
 class ReceiptViewSet(viewsets.ModelViewSet):
     queryset = Receipt.objects.all()
     serializer_class = ReceiptSerializer
+
+# Nova view para o frontend com Django Templates
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import RemittanceRequest
+
+@login_required
+def remittance_list_view(request):
+    remittances = RemittanceRequest.objects.all()
+    return render(request, 'remittance_list.html', {'remittances': remittances})
