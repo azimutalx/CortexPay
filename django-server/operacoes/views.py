@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.response import Response  # Import adicionado
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from .models import Bank, DailyRate, RemittanceRequest, BeneficiaryPayment, DollarPurchase, SellTransaction, AdvancePayment, Receipt
 from usuarios.models import User
 from .serializers import (
