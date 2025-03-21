@@ -32,6 +32,7 @@
           <th>Payer</th>
           <th>Total (R$)</th>
           <th>Status</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -42,10 +43,13 @@
             <td>{{ remittance.payer.name }}</td>
             <td>{{ remittance.total_amount_reals }}</td>
             <td>{{ remittance.status }}</td>
+            <td>
+              <a href="{% url 'payment_list' remittance.id %}" class="btn btn-primary btn-sm">Ver Pagamentos</a>
+            </td>
           </tr>
         {% empty %}
           <tr>
-            <td colspan="5">Nenhuma remessa encontrada.</td>
+            <td colspan="6">Nenhuma remessa encontrada.</td>
           </tr>
         {% endfor %}
       </tbody>

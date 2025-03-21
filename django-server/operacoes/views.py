@@ -108,3 +108,17 @@ from .models import RemittanceRequest
 def remittance_list_view(request):
     remittances = RemittanceRequest.objects.all()
     return render(request, 'remittance_list.html', {'remittances': remittances})
+
+@login_required
+def payment_list_view(request, remittance_id):
+    try:
+        remittance = RemittanceRequest.objects.get(id=remittance_id)
+        payments = BeneficiaryPayment.objects.filter(remittance_request=remittance)
+        return render(request, 'payment_list.html', {
+            'remittance': remittance,
+            'payments': payments
+        })
+    except RemittanceRequest.DoesNotExist:
+        return render(request, 'payment_list.html', {
+            'error': 'Remessa não encontrada.'
+        })
