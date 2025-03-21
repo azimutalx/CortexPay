@@ -122,3 +122,23 @@ def payment_list_view(request, remittance_id):
         return render(request, 'payment_list.html', {
             'error': 'Remessa não encontrada.'
         })
+
+@login_required
+def remittance_create_view(request):
+    return render(request, 'remittance_create.html')
+
+@login_required
+def remittance_edit_view(request, remittance_id):
+    try:
+        remittance = RemittanceRequest.objects.get(id=remittance_id)
+        return render(request, 'remittance_edit.html', {'remittance': remittance})
+    except RemittanceRequest.DoesNotExist:
+        return render(request, 'remittance_edit.html', {'error': 'Remessa não encontrada.'})
+
+@login_required
+def payment_edit_view(request, payment_id):
+    try:
+        payment = BeneficiaryPayment.objects.get(id=payment_id)
+        return render(request, 'payment_edit.html', {'payment': payment})
+    except BeneficiaryPayment.DoesNotExist:
+        return render(request, 'payment_edit.html', {'error': 'Pagamento não encontrado.'})

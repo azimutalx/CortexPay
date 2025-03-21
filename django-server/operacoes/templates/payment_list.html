@@ -50,6 +50,8 @@
               {% if payment.status == 'pago' and remittance.payer == user %}
                 <button class="btn btn-warning btn-sm" onclick="reopenPayment({{ payment.id }})">Reabrir</button>
               {% endif %}
+              <a href="{% url 'payment_edit' payment.id %}" class="btn btn-warning btn-sm">Editar</a>
+              <button class="btn btn-danger btn-sm" onclick="deletePayment({{ payment.id }})">Excluir</button>
             </td>
           </tr>
         {% empty %}
@@ -70,16 +72,12 @@
         return;
       }
 
-      const username = '{{ user.username }}';
-      const password = '1234'; // Senha fixa para simplicidade; em produção, use um método mais seguro
-      const authHeader = 'Basic ' + btoa(username + ':' + password);
-
-      axios.patch(`http://localhost:8000/api/beneficiary-payments/${paymentId}/`, {
+      axios.patch(`/api/beneficiary-payments/${paymentId}/`, {
         status: 'pendente',
         reason: reason
       }, {
         headers: {
-          'Authorization': authHeader
+          'X-CSRFToken': '{{ csrf_token }}'
         }
       })
       .then(response => {
@@ -87,8 +85,27 @@
         location.reload();
       })
       .catch(err => {
-        alert('Erro ao reabrir pagamento: ' + err.message);
+        console.error(err);
+        alert('Erro ao reabrir pagamento: ' + (err.response ? err.response.data.detail : err.message));
       });
+    }
+
+    function deletePayment(paymentId) {
+      if (confirm('Tem certeza que deseja excluir este pagamento?')) {
+        axios.delete(`/api/beneficiary-payments/${paymentId}/`, {
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => {
+          alert('Pagamento excluído com sucesso!');
+          location.reload();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Erro ao excluir pagamento: ' + (err.response ? err.response.data.detail : err.message));
+        });
+      }
     }
   </script>
 </body>

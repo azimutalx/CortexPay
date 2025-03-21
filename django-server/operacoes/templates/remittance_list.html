@@ -14,6 +14,9 @@
 <body>
   <div class="container">
     <h1 class="text-center">Lista de Remessas</h1>
+    <p class="text-center">
+      <a href="{% url 'remittance_create' %}" class="btn btn-success">Criar Nova Remessa</a>
+    </p>
     {% if user.is_authenticated %}
       <p class="text-center">Logado como: {{ user.username }} (<a href="{% url 'logout' %}">Sair</a>)</p>
     {% else %}
@@ -45,6 +48,8 @@
             <td>{{ remittance.status }}</td>
             <td>
               <a href="{% url 'payment_list' remittance.id %}" class="btn btn-primary btn-sm">Ver Pagamentos</a>
+              <a href="{% url 'remittance_edit' remittance.id %}" class="btn btn-warning btn-sm">Editar</a>
+              <button class="btn btn-danger btn-sm" onclick="deleteRemittance({{ remittance.id }})">Excluir</button>
             </td>
           </tr>
         {% empty %}
@@ -55,5 +60,26 @@
       </tbody>
     </table>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    function deleteRemittance(remittanceId) {
+      if (confirm('Tem certeza que deseja excluir esta remessa?')) {
+        axios.delete(`/api/remittance-requests/${remittanceId}/`, {
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+        .then(response => {
+          alert('Remessa excluída com sucesso!');
+          location.reload();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Erro ao excluir remessa: ' + (err.response ? err.response.data.detail : err.message));
+        });
+      }
+    }
+  </script>
 </body>
 </html>
