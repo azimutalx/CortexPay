@@ -1,0 +1,24 @@
+services:
+  django-server:
+    build: ./django-server
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./django-server:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:minha_senha123@db:5432/cambio_db
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=minha_senha123
+      - POSTGRES_DB=cambio_db
+
+volumes:
+  postgres_data:
