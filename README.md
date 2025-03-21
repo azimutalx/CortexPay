@@ -4,7 +4,7 @@ Aqui está uma versão resumida, clara e bem explicada de tudo que documentamos 
 
 # **CortexPay - Sistema de Gestão de Câmbio**
 **Data**: 21 de março de 2025  
-**Autor**: [Seu nome] com assistência de Grok (xAI)  
+**Autor**: Hemerson Abreu com assistência de Grok (xAI)  
 **Objetivo**: Criar um backend para gerenciar operações de câmbio (remessas, taxas, pagamentos) usando Django, PostgreSQL e Docker, com API REST para um futuro frontend em React.
 
 ---

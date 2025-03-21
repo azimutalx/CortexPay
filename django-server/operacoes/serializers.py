@@ -17,16 +17,16 @@ class DailyRateSerializer(serializers.ModelSerializer):
         model = DailyRate
         fields = ['id', 'date', 'market_rate', 'buy_rate', 'sell_rate']
 
-class RemittanceRequestSerializer(serializers.ModelSerializer):
-    payments = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    class Meta:
-        model = RemittanceRequest
-        fields = ['id', 'date_created', 'retailer', 'status', 'daily_rate', 'total_amount_reals', 'expected_dollars', 'dollars_received', 'payments']
-
-class BeneficiaryPaymentSerializer(serializers.ModelSerializer):
+class BeneficiaryPaymentSerializer(serializers.ModelSerializer):  # Movido para cima
     class Meta:
         model = BeneficiaryPayment
-        fields = ['id', 'remittance_request', 'beneficiary_name', 'account_number', 'agency', 'bank', 'cpf', 'pix_key_type', 'pix_key', 'amount_reals', 'status', 'payment_date', 'receipt', 'is_urgent', 'observation']
+        fields = ['id', 'remittance_request', 'beneficiary_name', 'account_number', 'agency', 'bank', 'cpf', 'pix_key_type', 'pix_key', 'amount_reals', 'status', 'payment_date', 'receipt', 'is_urgent', 'observation', 'reason']
+
+class RemittanceRequestSerializer(serializers.ModelSerializer):
+    payments = BeneficiaryPaymentSerializer(many=True, read_only=True)  # Agora funciona
+    class Meta:
+        model = RemittanceRequest
+        fields = ['id', 'date_created', 'retailer', 'payer', 'status', 'daily_rate', 'total_amount_reals', 'expected_dollars', 'dollars_received', 'payments']
 
 class DollarPurchaseSerializer(serializers.ModelSerializer):
     class Meta:
